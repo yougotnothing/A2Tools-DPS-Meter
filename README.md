@@ -28,7 +28,7 @@ The **[AION 2 DPS Meter website, a2tools.app](https://a2tools.app)** has the dow
 - Meter anchor setting (Top, Centre, Bottom)
 - Stream overlay for OBS on another PC: add the meter as a Browser Source, and choose the name shown for you
 - Fight uploads to [a2tools.app](https://a2tools.app/logs): a link to share, leaderboards and class stats
-- Windows and Linux ([Linux guide](docs/linux.md))
+- Windows, Linux ([Linux guide](docs/linux.md)) and experimental macOS (Apple Silicon)
 
 ## Requirements
 
@@ -44,12 +44,46 @@ The **[AION 2 DPS Meter website, a2tools.app](https://a2tools.app)** has the dow
 - **64-bit (x86_64) with WebKitGTK 4.1:** Ubuntu 22.04 or newer, Debian 12, Fedora 39 or newer, openSUSE, current Arch, CachyOS, Manjaro or EndeavourOS, Bazzite and other image-based Fedoras, or Steam Deck (SteamOS, through distrobox)
 - Packages and setup for each: the **[Linux guide](docs/linux.md)**
 
+## macOS (Apple Silicon — experimental)
+
+The macOS build uses the system `libpcap` library and the kernel BPF devices
+(`/dev/bpf*`); **Npcap is Windows-only and is never downloaded or installed on
+macOS**. The Wine/CrossOver game process is detected by its executable name,
+and packet capture should normally use the physical interface carrying the
+game traffic (for example `en0`).
+
+Build on an Apple Silicon Mac:
+
+```bash
+xcode-select --install
+rustup target add aarch64-apple-darwin
+npm install
+npm run tauri build -- --target aarch64-apple-darwin --bundles dmg
+```
+
+The DMG is written under
+`src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/`.
+
+macOS commonly restricts access to `/dev/bpf*` to root. If capture reports
+`Permission denied`, inspect the device nodes with `ls -l /dev/bpf*`. Granting
+your user access to these devices may be necessary; the nodes can be recreated
+by macOS after reboot, so a manual permission change may need to be repeated.
+Do not leave BPF devices world-writable. The meter does not request
+administrator privileges or change system permissions automatically.
+
+The macOS port is experimental: overlay stacking over a Wine game in a
+macOS fullscreen Space, game focus detection, screenshots, global hotkeys,
+secure token storage and automatic updates are not yet equivalent to Windows.
+For the most reliable overlay, run AION 2 in borderless/windowed mode rather
+than a separate macOS fullscreen Space.
+
 ## Installation
 
-1. Install [Npcap](https://npcap.com) with WinPcap API-compatible mode enabled
-2. Download the latest MSI installer from [Releases](https://github.com/taengu/A2Tools-DPS-Meter/releases)
-3. Run the installer
-4. Launch A2Tools DPS Meter (run as Administrator)
+**Windows:** Install [Npcap](https://npcap.com) with WinPcap API-compatible mode enabled, download the latest MSI from [Releases](https://github.com/taengu/A2Tools-DPS-Meter/releases), then launch A2Tools DPS Meter as Administrator.
+
+**macOS:** Build the Apple Silicon DMG using the instructions above. No Npcap installation is required.
+
+**Linux:** Install the package for your distribution and follow the [Linux guide](docs/linux.md).
 
 **Linux:** packages for Ubuntu/Debian (.deb), Fedora/openSUSE (.rpm), Bazzite, Arch/CachyOS/Manjaro and Steam Deck — see the **[Linux guide](docs/linux.md)**.
 
@@ -72,16 +106,16 @@ The overlay shows the boss, the fight timer and the rows the meter shows (name, 
 
 - [Rust](https://rustup.rs/) (latest stable)
 - [Node.js](https://nodejs.org/) (v18+)
-- [Npcap](https://npcap.com) installed
+- [Npcap](https://npcap.com) installed (Windows only; not needed on macOS or Linux)
 
 ### Build
 
 ```bash
 npm install
-npm run tauri build
+npm run tauri build -- --target aarch64-apple-darwin --bundles dmg
 ```
 
-The MSI installer will be at `src-tauri/target/release/bundle/msi/`.
+Windows: MSI at `src-tauri/target/release/bundle/msi/`. macOS Apple Silicon: DMG at `src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/`.
 
 ### Development
 
@@ -117,12 +151,12 @@ Two things still leave the computer, and only these: skill and buff icons, loade
 ## FAQ
 
 **Q: The meter shows "Connecting..."**
-A: Make sure AION 2 is running and the app has administrator privileges. If using a VPN or ping reducer, the app will detect the loopback adapter automatically.
+A: Make sure AION 2 is running. On Windows, run the app as Administrator; on Linux, grant packet-capture capability as described in the Linux guide; on macOS, check access to `/dev/bpf*` and select the interface carrying the game traffic.
 
 **Q: My name doesn't appear on the meter**
 A: Enter your character name and actor ID in Settings. The name is auto-detected from the AION 2 window title.
 
-**Q: Npcap is installed but capture doesn't work**
+**Q: Npcap is installed but capture doesn't work (Windows)**
 A: Reinstall Npcap and ensure "WinPcap API-compatible Mode" is checked during installation.
 
 ## Community

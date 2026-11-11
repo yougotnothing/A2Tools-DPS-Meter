@@ -10,7 +10,7 @@
 //! - `win32/` — Windows, the platform the meter ships on.
 //! - `linux/` — Linux, for players running the game under Proton. Partly
 //!   ported; what is not ported yet is borrowed from `unsupported/`.
-//! - `unsupported/` — every other target. It compiles, and does the safe
+//! - `macos/` — macOS, using system libpcap/BPF and Wine process detection.\n//! - `unsupported/` — every other target. It compiles, and does the safe
 //!   nothing: no capture library, no screenshots, no hotkeys, no stored token.
 //!
 //! OS-neutral helpers that only *support* platform code (the screenshot rect
@@ -29,7 +29,11 @@ mod os;
 #[path = "linux/mod.rs"]
 mod os;
 
-#[cfg(not(any(windows, target_os = "linux")))]
+#[cfg(target_os = "macos")]
+#[path = "macos/mod.rs"]
+mod os;
+
+#[cfg(not(any(windows, target_os = "linux", target_os = "macos")))]
 #[path = "unsupported/mod.rs"]
 mod os;
 

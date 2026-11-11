@@ -357,8 +357,13 @@
     window._dpsApp?._onOverlayLockChanged?.(!!event?.payload);
   });
 
-  listen("npcap-missing", () => {
-    const msg = "Npcap is required for packet capture but is not installed.\n\nWould you like to download it now?";
+  listen("npcap-missing", (event) => {
+    const platformHelp = event?.payload;
+    if (typeof platformHelp === "string" && platformHelp.length) {
+      alert(platformHelp);
+      return;
+    }
+    const msg = "Npcap is required for packet capture but is not installed.\\n\\nWould you like to download it now?";
     if (confirm(msg)) {
       shellOpen("https://npcap.com/#download");
     }

@@ -4108,20 +4108,20 @@ pub fn run() {
                 }
             }
 
-            // Check if Npcap is available before starting capture
-            let npcap_available = platform::pcap::library_available();
-            if !npcap_available {
-                tracing::error!("Npcap is not installed — packet capture disabled");
+            // Check whether the platform packet-capture library is available before starting capture
+            let capture_available = platform::pcap::library_available();
+            if !capture_available {
+                tracing::error!("Packet capture library is unavailable — packet capture disabled");
             }
 
             // Start capture pipeline
             let (tx, rx) = mpsc::channel::<CapturedPayload>(4096);
 
             let capturer = PcapCapturer::new(tx, port_detector.clone());
-            if npcap_available {
+            if capture_available {
                 capturer.start();
             } else {
-                // Offer to install it, and start capturing once it is in.
+                // On Windows this may offer Npcap installation; other platforms show capture help.
                 crate::npcap_setup::offer(app.handle().clone(), capturer);
             }
 

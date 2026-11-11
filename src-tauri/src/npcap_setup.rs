@@ -126,7 +126,7 @@ pub fn offer(app: tauri::AppHandle, capturer: PcapCapturer) {
     tauri::async_runtime::spawn(async move {
         // Small delay so the page is listening.
         tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-        let _ = app.emit("npcap-missing", ());
+        let _ = app.emit("npcap-missing", crate::platform::pcap::MISSING_HELP);
     });
 }
 
