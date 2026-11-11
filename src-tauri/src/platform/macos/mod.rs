@@ -12,7 +12,7 @@ pub mod pcap;
 #[path = "../unsupported/secret.rs"] pub mod secret;
 #[path = "../unsupported/shell.rs"] pub mod shell;
 #[path = "../unsupported/updater.rs"] pub mod updater;
-#[path = "../unsupported/window.rs"] pub mod window;
+pub mod window;
 pub mod window_detector;
 #[path = "../unsupported/window_rules.rs"] pub mod window_rules;
 #[path = "../unsupported/window_startup.rs"] pub mod window_startup;

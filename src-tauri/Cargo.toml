@@ -198,6 +198,9 @@ x11-dl = { version = "2.21", optional = true }
 # opener plugin and secret-service already bring in, so no second D-Bus stack.
 zbus = { version = "5", optional = true }
 
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2-app-kit = { version = "0.3", default-features = false, features = ["NSWindow"] }
+
 [dev-dependencies]
 flate2 = "1"
 zstd = { version = "0.14.3", default-features = false }
